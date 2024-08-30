@@ -1,0 +1,8 @@
+# Secrets
+my_secrets/
+*.txt
+.streamlit/
+
+# Ambiente virtual
+venv/
+
