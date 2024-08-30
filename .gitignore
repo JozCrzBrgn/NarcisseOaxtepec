@@ -1,6 +1,6 @@
 # Secrets
 my_secrets/
-*.txt
+shortcuts.txt
 .streamlit/
 
 # Ambiente virtual
