@@ -15,6 +15,7 @@ class Configuracion:
         self.TAB_INVENTARIO = st.secrets["TAB_INVENTARIO"]
         self.TAB_CELEBRACION = st.secrets["TAB_CELEBRACION"]
         self.TAB_ABONOS = st.secrets["TAB_ABONOS"]
+        self.TAB_INVENTARIOS_VARIOS = st.secrets["TAB_INVENTARIOS_VARIOS"]
 config = Configuracion()
 
 
