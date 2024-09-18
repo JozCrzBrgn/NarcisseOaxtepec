@@ -13,6 +13,8 @@ class Configuracion:
         self.TAB_SECRETOS = st.secrets["TAB_SECRETOS"]
         self.TAB_PRODUCTOS = st.secrets["TAB_PRODUCTOS"]
         self.TAB_INVENTARIO = st.secrets["TAB_INVENTARIO"]
+        self.TAB_CELEBRACION = st.secrets["TAB_CELEBRACION"]
+        self.TAB_ABONOS = st.secrets["TAB_ABONOS"]
 config = Configuracion()
 
 
