@@ -37,30 +37,26 @@ elif authentication_status:
     with col2:
         authenticator.logout('Logout', 'main')
     
-    st.title("Pasteles de Celebración")
+    st.title("Abonos de Celebración")
 
     #? ANALISIS DE DATOS
     # Obtenemos los datos de la DB
-    data = config.supabase.table(config.TAB_CELEBRACION).select("*").execute().data
+    data = config.supabase.table(config.TAB_ABONOS).select("*").execute().data
     # Creamos el Dataframe
     df = pd.DataFrame(data)
     # Quitamos las columnas que no necesitamos
-    df_celeb = df[
-        ['clave', 'cliente', 'email', 'celular', 'fecha_entrega', 'hora_entrega', 'costo_total', 'personas', 'base', 
-         'relleno', 'pastel', 'cobertura', 'lugar_entrega', 'descripcion', 'empleado', 'estatus', 'bool_descuento', 'leyenda', 
-         'flete', 'extras']
+    df_abono = df[
+        ['clave', 'fecha_abono', 'hora_abono', 'efectivo', 'tarjeta', 'transferencia', 'cambio', 'cantidad_abonada']
          ]
-    # Renombrar la columna 'tipo_combo' a 'promocion'
-    df_celeb.rename(columns={'bool_descuento': 'con_descuento'}, inplace=True)
     # Convertimos la columna de caducidad a datetime
-    df_celeb['fecha_entrega'] = pd.to_datetime(df_celeb['fecha_entrega'])
+    df_abono['fecha_abono'] = pd.to_datetime(df_abono['fecha_abono'])
 
     col1_1, col1_2, col1_3  = st.columns(3)
     with col1_1:
         #? FILTROS POR MES
         # Extraer los meses de la columna de fechas
-        df_celeb['mes'] = df_celeb['fecha_entrega'].dt.month
-        df_celeb['dia'] = df_celeb['fecha_entrega'].dt.day
+        df_abono['mes'] = df_abono['fecha_abono'].dt.month
+        df_abono['dia'] = df_abono['fecha_abono'].dt.day
 
         # Definir los nombres de los meses
         meses = {
@@ -70,10 +66,10 @@ elif authentication_status:
         }
 
         # Filtro por mes, inicializando en enero (mes 1)
-        mes_seleccionado = st.selectbox('Selecciona un mes de entrega:', options=list(meses.keys()), format_func=lambda x: meses[x], index=0)
+        mes_seleccionado = st.selectbox('Selecciona un mes de abono:', options=list(meses.keys()), format_func=lambda x: meses[x], index=0)
 
         # Filtrar el DataFrame según el mes seleccionado
-        df_filtrado = df_celeb[df_celeb['mes'] == mes_seleccionado]
+        df_filtrado = df_abono[df_abono['mes'] == mes_seleccionado]
 
     with col1_2:
         #? FILTROS POR DÍAS
@@ -98,9 +94,9 @@ elif authentication_status:
     with col1_3:
             #? FILTROS POR CATEGORIA
             # Widget para seleccionar una categoría
-            estatus_seleccionada = st.multiselect('Filtrar por estatus:', df_filtrado['estatus'].unique())
-            if estatus_seleccionada:
-                df_filtrado = df_filtrado[df_filtrado['estatus'].isin(estatus_seleccionada)]
+            clave_seleccionada = st.multiselect('Filtrar por clave:', df_filtrado['clave'].unique())
+            if clave_seleccionada:
+                df_filtrado = df_filtrado[df_filtrado['clave'].isin(clave_seleccionada)]
             else:
                 df_filtrado = df_filtrado  # Mostrar todo si no hay selección
 
@@ -109,7 +105,7 @@ elif authentication_status:
     def to_excel(df):
         output = BytesIO()
         with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-            df.to_excel(writer, index=False, sheet_name='PastelesCelebracion')
+            df.to_excel(writer, index=False, sheet_name='Abonos')
             writer._save()
         output.seek(0)
         return output
@@ -118,13 +114,10 @@ elif authentication_status:
     st.download_button(
         label="Descargar en formato Excel",
         data=excel_data,
-        file_name='PastelesCelebracion.xlsx',
+        file_name='Abonos.xlsx',
         mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     )
 
+
     # Mostrar tabla filtrada
-    st.table(df_filtrado[
-        ['clave', 'cliente', 'email', 'celular', 'fecha_entrega', 'hora_entrega', 'costo_total', 'personas', 'base', 
-         'relleno', 'pastel', 'cobertura', 'lugar_entrega', 'descripcion', 'empleado', 'estatus', 'con_descuento', 'leyenda', 
-         'flete', 'extras']
-    ])
+    st.table(df_filtrado)
