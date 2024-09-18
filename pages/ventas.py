@@ -42,13 +42,16 @@ elif authentication_status:
 
     #? ANALISIS DE DATOS
     # Obtenemos los datos de la DB
-    data = config.supabase.table(config.TAB_INVENTARIO).select("*").eq("estatus", "VENDIDO").execute().data
+    data = config.supabase.table(config.TAB_INVENTARIO).select("clave,producto,categoria,tipo_combo,fecha_estatus,hora_estatus,costo_neto_producto").eq("estatus", "VENDIDO").execute().data
     # Creamos el Dataframe
     df = pd.DataFrame(data)
+    print(df.columns)
     # Quitamos las columnas que no necesitamos
-    df_inv = df[['clave', 'producto', 'categoria', 'fecha_estatus', 'hora_estatus', 'costo_neto_producto']]
+    df_inv = df[['clave', 'producto', 'categoria', 'tipo_combo','fecha_estatus', 'hora_estatus', 'costo_neto_producto']]
     # Convertimos la columna de caducidad a datetime
     df_inv['fecha_estatus'] = pd.to_datetime(df_inv['fecha_estatus'])
+    # Cambiamos el nombre de la columna 'tipo_combo' a 'promocion'
+    df_inv.rename(columns={'tipo_combo': 'promocion'}, inplace=True)
 
 
     col1_1, col1_2  = st.columns(2)
@@ -92,7 +95,7 @@ elif authentication_status:
             df_filtrado = df_filtrado[(df_filtrado['dia'] >= dias_seleccionados[0]) & (df_filtrado['dia'] <= dias_seleccionados[1])]
 
     if df_filtrado.empty==False:
-        col1_1, col1_2, col1_3  = st.columns([2,2,1])
+        col1_1, col1_2, col2_2, col1_3  = st.columns([1,1,1,2])#[2,2,1])
         with col1_1:
             #? FILTROS POR CATEGORIA
             # Widget para seleccionar una categoría
@@ -113,6 +116,14 @@ elif authentication_status:
             producto_seleccionado = st.multiselect('Filtrar por producto:', productos_disponibles)
             if producto_seleccionado:
                 df_filtrado = df_filtrado[df_filtrado['producto'].isin(producto_seleccionado)]
+        with col2_2:
+            #? FILTROS POR PRODUCTOS
+            # Widget para seleccionar una promocion
+            promocion_seleccionada = st.multiselect('Filtrar por promoción:', df_filtrado['promocion'].unique())
+            if promocion_seleccionada:
+                df_filtrado = df_filtrado[df_filtrado['promocion'].isin(promocion_seleccionada)]
+            else:
+                df_filtrado = df_filtrado  # Mostrar todo si no hay selección
         with col1_3:
             ventas = round(df_filtrado['costo_neto_producto'].sum(), 2)
             st.metric("VENDIDO", f"$ {ventas} MXN")
@@ -136,4 +147,4 @@ elif authentication_status:
         )
         
         # Mostrar tabla filtrada
-        st.table(df_filtrado[['clave', 'producto', 'categoria', 'fecha_estatus', 'hora_estatus', 'costo_neto_producto']])
+        st.table(df_filtrado[['clave', 'producto', 'categoria', 'promocion', 'fecha_estatus', 'hora_estatus', 'costo_neto_producto']])
