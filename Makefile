@@ -3,25 +3,31 @@ run:
 	streamlit run inventario.py
 
 cred:
-# Ejecuta el programa
+# Crea las credenciales
 	@py -c "from my_secrets.generate_keys import crear_credenciales; crear_credenciales()";
 
 #? make feat BRANCH="insumos"
 feat:
-# Ejecuta el programa
+# Crea una rama nueva en dev
 	git checkout dev
 	git pull origin dev
 	git checkout -b feat/$(BRANCH) dev
 
 #? make mdev BRANCH="insumos"
 mdev:
-# Ejecuta el programa
+# Hace un merge en la rama dev
 	git checkout dev
 	git pull origin dev
 	git merge feat/$(BRANCH)
 
 mmain:
-# Ejecuta el programa
+# Hace un merge en la rama main
 	git checkout main
 	git pull origin main
 	git merge dev
+
+#? make tag MSG="Se crea pagina de insumos"
+tag:
+# Crea un tag
+	git tag -a login -m "$(MSG)"
+	git push --tags
