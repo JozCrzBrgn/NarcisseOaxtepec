@@ -1,6 +1,6 @@
 run:
 # Ejecuta el programa
-	streamlit run inventario.py
+	streamlit run streamlit_app.py
 
 cred:
 # Crea las credenciales
