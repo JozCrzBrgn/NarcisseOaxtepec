@@ -26,8 +26,8 @@ mmain:
 	git pull origin main
 	git merge dev
 
-#? make tag MSG="Se crea pagina de insumos"
+#? make tag TAG="insumos" MSG="Se crea pagina de insumos"
 tag:
 # Crea un tag
-	git tag -a login -m "$(MSG)"
+	git tag -a $(TAG) -m "$(MSG)"
 	git push --tags
